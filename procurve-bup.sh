@@ -104,6 +104,7 @@ function main() {
   local _create_archive=
   local _now_day=$(date +%a)     # eg, Sun, Mon, Tue
   local _tfname=".switchbup-$$"  # temp filename for transfer to avoid blatting exiting backup with failed backup
+  local exitcode=0
 
   ### check for external dependencies
   for cmd in sshpass readlink scp rm chmod logger mkdir grep ln mv diff tar ; do
@@ -225,6 +226,7 @@ function main() {
       ### see if the running-config is different to startup-config
       if ! diff -q startup-config running-config > /dev/null ; then
         log_warn "running-config and startup-config differ!" >&2
+        exitcode=1
       fi
     fi
 
@@ -244,7 +246,7 @@ function main() {
     chmod 440 "$_archive_fname"
   fi
 
-  exit 0
+  exit $exitcode
 }
 
 main "$@"
